@@ -1,0 +1,27 @@
+.app {
+    margin: 0 20px;
+}
+
+.navbar {
+    margin-bottom: 20px;
+    padding: 10px 0;
+    display: flex;
+    justify-content: end;
+}
+
+.bar {
+    display: flex;
+    border-radius: 3px;
+}
+
+.bar .navbar__item {
+    width: 100px;
+    text-align: center;
+}
+
+.bar .background-highliter {
+    background-color: aqua;
+    height: 0;
+}
+
+

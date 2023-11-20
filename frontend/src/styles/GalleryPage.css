@@ -1,0 +1,163 @@
+/* .gallerypage {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.gallerypage__top{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.gallerypage__top .heading{
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.grid__container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    flex:1;
+}
+
+
+.grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-auto-rows: auto;
+    grid-gap: 15px;
+}
+
+.grid .image__container{
+    position: relative;
+    height: 300px;
+    background-color: brown;
+    cursor: pointer;
+}
+
+.grid .image__container img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image__container-delete {
+    border: 2px solid red;
+}
+
+.popup{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.75);
+    z-index: 1;
+}
+
+.pagination__container{
+    display: flex;
+    gap: 5px;
+}
+
+.delete-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.carousel-btn{
+    position: absolute;
+    top: 0;
+    height: 100%;
+    border: none;
+    opacity: 0;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.carousel-btn:hover{
+    opacity: 1;
+    transition: .2s ease;
+}
+
+.carousel-left {
+    padding: 0 8px;
+    left: 0;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.0));
+}
+
+.carousel-right{
+    padding: 0 8px;
+    right: 0;
+    background: linear-gradient(to left, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.0));
+} */
+
+
+.gallerypage__topnav {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: end;
+}
+
+.gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 10px;
+}
+
+.gallery__image__container {
+    position: relative;
+    height: 300px;
+    background-color: peachpuff;
+}
+
+.gallery__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.corosal {
+    position: relative;
+}
+
+.corosal__btn {
+    position: absolute;
+    height: 100%;
+    width: 40px;
+    border: none;
+    z-index: 1;
+    opacity: 0;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.corosal__btn:nth-of-type(2){
+    top: 0;
+    right: 0;
+}
+
+.corosal__btn:nth-of-type(1){
+    top: 0;
+    left: 0;
+}
+
+.corosal__btn:hover {
+    display: block;
+    opacity: 1;
+    transition: .2s ease;
+}
+
+.corosal__btn:nth-of-type(2):hover {
+    background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1));
+}
+
+.corosal__btn:nth-of-type(1):hover {
+    background: linear-gradient(to left, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1));
+}
+

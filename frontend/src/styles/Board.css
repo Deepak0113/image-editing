@@ -1,0 +1,21 @@
+.board{
+    padding-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.toolbar__container{
+    margin-bottom: 20px;
+    display: flex;
+    gap: 20px;
+    /* align-items: center; */
+}
+
+.board .clr-btn {
+    display: block;
+}
+
+svg path:hover {
+    border: 2ps solid #000;
+}

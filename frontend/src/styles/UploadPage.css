@@ -1,0 +1,25 @@
+.uploadpage__topnav {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: end;
+}
+
+.uploadpage__imglist .image__item {
+    padding: 8px;
+    display: flex;
+    gap: 10px;
+    background-color: #e5ebed;
+    color: #466a74;
+}
+
+.uploadpage__imglist .image__item .item__name {
+    flex: .8;
+}
+
+.uploadpage__imglist .image__item .item__type {
+    flex: .1;
+}
+
+.uploadpage__imglist .image__item .item__size {
+    flex: .1;
+}
