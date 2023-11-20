@@ -116,14 +116,14 @@ const BoardToolBar: FC<BoardToolBarProps> = ({ changeAttribute, changeEditMode }
 
 
             {/* selecting color */}
-            <div className="button icon-btn primary-btn color-btn">
+            <div className="btn icon-btn btn-primary color-btn">
                 <label htmlFor="color-border">
                     <ColorFillCircleIcon fill={colorChangeBorder} height={24} />
                     Border
                 </label>
                 <input type="color" style={{ display: 'none' }} id='color-border' onChange={handleColorChangeBorder} />
             </div>
-            <div className="button icon-btn primary-btn color-btn">
+            <div className="btn icon-btn btn-primary color-btn">
                 <label htmlFor="color-fill">
                     <ColorFillCircleIcon fill={colorChangeFill} height={24} />
                     Fill

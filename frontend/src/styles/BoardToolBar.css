@@ -6,11 +6,13 @@
 
 .toolbar__section {
     display: flex;
-    border: 2px solid #b9eb8e;
+    border: 2px solid #26be96;
     border-radius: 5px;
+    background: #e5ebed;
 }
 
 .toolbar__section .icon-btn{
+    display: flex;
     padding: 5px;
     background-color: transparent;
     border: none;
@@ -18,12 +20,12 @@
 }
 
 .toolbar__section .icon-btn:hover {
-    background-color: #b9eb8e;
+    background-color: #26be96;
     transition: .2s ease;
 }
 
 .toolbar__section .selected{
-    background-color: #b9eb8e;
+    background-color: #26be96;
 }
 
 .color-btn label { 

@@ -111,8 +111,8 @@ const Board: FC<BoardProps> = ({ imageUrl, popupCloseToggle }) => {
                 <BoardToolBar
                     changeAttribute={changeAttribute}
                     changeEditMode={changeEditMode} />
-                <button className="button ghost-btn" onClick={popupCloseToggle}>Clear board</button>
-                <button className="button primary-btn clr-btn" onClick={handleUploadingImage}>Upload</button>
+                <button className="btn btn-secondary" onClick={popupCloseToggle}>Clear board</button>
+                <button className="btn btn-primary clr-btn" onClick={handleUploadingImage}>Upload</button>
             </div>
             <svg ref={boardRef}></svg>
         </div>
