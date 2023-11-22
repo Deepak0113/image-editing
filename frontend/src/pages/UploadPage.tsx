@@ -1,6 +1,6 @@
 import { ChangeEvent, FC, useEffect, useState } from "react";
 import { uploadImage } from "../api/api";
-import usePopupNotification from "../hooks/usePopupNotification";
+import usePopupNotification from "../hooks/usePopupNotificationHook/usePopupNotification";
 
 import '../styles/UploadPage.css';
 import { fileToArrayBuffer, generateImageUrlFromBuffer, unzipOnlyImages } from "../utility/helper";
@@ -51,7 +51,7 @@ const UploadPage: FC<UploadPageProps> = ({ handleImage, images }) => {
     }
 
     return <div className="uploadpage">
-        <div>{notification}</div>
+        {notification}
 
         {/* Upload Page Top Nav */}
         <div className="uploadpage__topnav">

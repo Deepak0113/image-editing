@@ -1,0 +1,11 @@
+.notification__popup {
+    padding: 8px 15px;
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    background-color: rgba(38, 190, 150, 0.5);
+    color: #000;
+    border: 2px solid #26be96;
+    border-radius: 3px;
+    transform: translateX(-50%);
+}

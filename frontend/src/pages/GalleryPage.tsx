@@ -4,6 +4,7 @@ import '../styles/GalleryPage.css';
 import { DeleteIcon, LeftArrow, RightArrow } from "../icons/icons";
 import { generateImageUrlFromBuffer } from "../utility/helper";
 import Board from "../components/Board";
+import usePopupNotification from "../hooks/usePopupNotificationHook/usePopupNotification";
 
 interface GalleryPageProps {
     images: ImageListItem[]
@@ -17,6 +18,7 @@ const GalleryPage: FC<GalleryPageProps> = ({ images, handleImages }) => {
     const displayLimit = 10;
 
     const [clickedImage, setClickedImage] = useState<string | null>(null);
+    const { openPopupNotification, notification } = usePopupNotification();
 
     // state to handle delete mode
     const [isDeleteMode, setIsDeleteMode] = useState<boolean>(false);
@@ -71,10 +73,10 @@ const GalleryPage: FC<GalleryPageProps> = ({ images, handleImages }) => {
 
         deleteImagesAPI(Array.from(selectDeleteImages.keys()))
             .then((result) => {
-                console.log(result);
                 removeImagesFromList(Array.from(result.deletedImages));
                 setTotalImagesCount((prev) => prev - selectDeleteImages.size);
                 setSelectDeleteImages(new Set());
+                openPopupNotification('Deleted images');
             })
             .catch((err) => {
                 console.log(err);
@@ -122,6 +124,8 @@ const GalleryPage: FC<GalleryPageProps> = ({ images, handleImages }) => {
     }
 
     return <div className="gallerypage">
+        {notification}
+
         {/* gallery nav */}
         <div className="gallerypage__topnav">
             {
@@ -167,7 +171,7 @@ const GalleryPage: FC<GalleryPageProps> = ({ images, handleImages }) => {
                                             src={imageItem.imageUrl}
                                             alt={imageItem.imageHash}
                                             onClick={() => isDeleteMode ? handleDeleteImage(imageItem.imageHash) : setClickedImage(imageItem.imageUrl)} />
-                                        {selectDeleteImages.has(imageItem.imageHash) && <DeleteIcon height={32} fill="#f0483e" />}
+                                        {selectDeleteImages.has(imageItem.imageHash) && <DeleteIcon className="delete__icon" height={32} fill="#f0483e" />}
                                     </div>
                                 })
                         }

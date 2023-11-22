@@ -1,9 +1,10 @@
 import { useState } from "react"
+import './usePopupNotification.css'
 
 const usePopupNotification = () => {
     const [showPopupNotification, setShowPopupNotification] = useState<boolean>(false);
     const [notificationContent, setNotificationContent] = useState<string>('');
-    const POPUP_TIME_MS = 5000;
+    const POPUP_TIME_MS = 2000;
 
     // open notification toggle
     const openPopupNotification = (content: string) => {
@@ -18,7 +19,7 @@ const usePopupNotification = () => {
 
     return {
         openPopupNotification,
-        notification: <div>{notificationContent}</div>
+        notification: (showPopupNotification ? <div className="notification__popup">{notificationContent}</div> : <></>)
     }
 }
 

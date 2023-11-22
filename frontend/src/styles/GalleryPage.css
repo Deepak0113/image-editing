@@ -161,3 +161,12 @@
     background: linear-gradient(to left, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1));
 }
 
+
+.gallery__image__container{
+    position: relative;
+}
+
+.gallery__image__container .delete__icon {
+    position: absolute;
+    right: 0;
+}
