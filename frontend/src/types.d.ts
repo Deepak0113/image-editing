@@ -1,12 +1,14 @@
-interface ImageResponce {
-    imageHash: string,
-    imageBuffer: {data: Buffer, type: string}
+type ImageResponce = {
+    imageId?: string,
+    filename?: string,
+    buffer?: { data: Buffer, type: string }
 }
 
 type ImageListItem = {
-    imageHash: string
+    imageId?: string,
     imageBuffer?: { data: Buffer, type: string }
     imageUrl: string
+    filename?: string,
 }
 
 type BoardElementAttribute = {
@@ -16,4 +18,51 @@ type BoardElementAttribute = {
     lineColor: string
 }
 
+type IncomingResponce = {
+    message: string,
+    data?: {
+        count?: number,
+        imageData?: ImageResponce[]
+    },
+    statusCode: number
+}
+
 type BoardEditMode = 'pen' | 'shapes' | 'eraser';
+
+
+
+type IncomingUploadResponse = {
+    message: string,
+    statusCode: number
+    data: {
+        imageId: string
+    }
+}
+
+type IncomingDeleteResponse = {
+    message: string,
+    statusCode: number
+    data: {
+        imageId: string,
+        isDeleted: boolean
+    }[]
+}
+
+type IncomingTotalCountResponse = {
+    message: string,
+    statusCode: number
+    data: {
+        count: number
+    }
+}
+
+type IncomingGetImageResponse = {
+    message: string,
+    statusCode: number
+    data: {
+        filename: string,
+        buffer: { data: Buffer, type: string },
+        imageId: string
+    }[]
+}
+

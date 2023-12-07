@@ -4,6 +4,7 @@ import usePopupNotification from "../hooks/usePopupNotificationHook/usePopupNoti
 
 import '../styles/UploadPage.css';
 import { fileToArrayBuffer, generateImageUrlFromBuffer, unzipOnlyImages } from "../utility/helper";
+import isImageValid from "../utility/validation";
 
 interface UploadPageProps {
     handleImage: (imageItem: ImageListItem[]) => void;
@@ -13,7 +14,7 @@ interface UploadPageProps {
 const UploadPage: FC<UploadPageProps> = ({ handleImage, images }) => {
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
     const { openPopupNotification, notification } = usePopupNotification();
-    const [selectedImageHash, setSelectedImageHash] = useState<Set<string>>(new Set());
+    // const [selectedImageHash, setSelectedImageHash] = useState<Set<string>>(new Set());
 
     // handles select images
     const handleSelectImages = (event: ChangeEvent<HTMLInputElement>) => {
@@ -25,10 +26,12 @@ const UploadPage: FC<UploadPageProps> = ({ handleImage, images }) => {
 
         [...imageFiles].map(async (file) => {
             if (file.type === 'application/zip') {
-                const unzippedImageFiles: File[] = await unzipOnlyImages(file);
+                const unzippedImageFiles: File[] = (await unzipOnlyImages(file)).filter(file => isImageValid(file));
                 setSelectedImages((prev) => [...prev, ...unzippedImageFiles]);
             } else {
-                setSelectedImages((prev) => [...prev, file]);
+                if (await isImageValid(file)) {
+                    setSelectedImages((prev) => [...prev, file]);
+                }
             }
         })
     }
@@ -38,12 +41,18 @@ const UploadPage: FC<UploadPageProps> = ({ handleImage, images }) => {
         if (selectedImages.length === 0) return;
 
         selectedImages.forEach(async (file: File) => {
-            const result: { message: string, status: number } = (await uploadImage(file)) as { message: string, status: number };
+            const result = (await uploadImage(file));
+
+            if (!result.data) return;
+            if (!result.data.imageId) return;
+
             const imageItem: ImageListItem = {
-                imageHash: result.message,
+                imageId: result.data.imageId,
                 imageUrl: URL.createObjectURL(file)
             }
             handleImage([imageItem, ...images])
+
+            // uploadImage(file);
         })
 
         setSelectedImages([]);
@@ -63,12 +72,13 @@ const UploadPage: FC<UploadPageProps> = ({ handleImage, images }) => {
                             type="file"
                             multiple={true}
                             id="input-btn"
-                            onChange={handleSelectImages} />
+                            onChange={handleSelectImages}
+                            accept="image/*, application/zip" />
                         <label className="btn btn-primary" htmlFor="input-btn">Upload images</label>
                     </> :
                     <>
                         <button className="btn btn-secondary" onClick={() => setSelectedImages([])}>Cancel</button>
-                        <button className="btn btn-primary" style={{marginLeft: '10px'}} onClick={handleUploadImages}>Upload {selectedImages.length} Images</button>
+                        <button className="btn btn-primary" style={{ marginLeft: '10px' }} onClick={handleUploadImages}>Upload {selectedImages.length} Images</button>
                     </>
             }
         </div>

@@ -8,17 +8,17 @@ export default class ImageList {
     }
 
     // add image
-    add(imageHash: string, imageFile: { data: Buffer, type: string }, imageUrl: string) {
+    add(imageId: string, imageFile: { data: Buffer, type: string }, imageUrl: string) {
         this.imageList = [
-            { imageHash, imageBuffer: imageFile, imageUrl },
+            { imageId, imageBuffer: imageFile, imageUrl },
             ...this.imageList
         ];
     }
 
     // remove image
-    remove(imageHash: string) {
+    remove(imageId: string) {
         this.imageList = this.imageList.filter((imageListItem) => {
-            return imageListItem.imageHash !== imageHash;
+            return imageListItem.imageId !== imageId;
         });
     }
 

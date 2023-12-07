@@ -4,6 +4,9 @@ import { getImageFromDB, getTotalImageCountFromDB, uploadImageDB, deleteImageDB 
 import { Db, GridFSBucket } from "mongodb";
 import { commonMiddleware } from "./middlewares/common";
 import ImageHash from "./helper/ImageHash";
+import { generateResponse } from "./helper/ResponceGenerator";
+import { imageValidity } from "./helper/Validation";
+import { deleteImagesEndPt, getImageEndPt, getTotalImagesCountEndPt, uploadImageEndPt } from "./api-endpoints/endpoints";
 
 const PORT = 8080;
 
@@ -18,85 +21,25 @@ commonMiddleware(app);
 // database connection instance
 const connector = MongoDBConnector.getInstance();
 
-// api endpoints to check if the server is working or not
-app.get('/api/checking', (request, response) => {
-    response.send('data value')
-});
-
 // api endpoints to upload images
 app.post('/api/uploadImage', (request: Request, response: Response) => {
-    const dataBuffer: Buffer[] = [];
-
-    request.on('data', (chunk: Buffer) => {
-        dataBuffer.push(chunk);
-    })
-
-    request.on('end', async () => {
-        const buffer = Buffer.concat(dataBuffer);
-        const imageHash = await ImageHash.generateImageHash(buffer);
-
-        uploadImageDB(gridFsBucket, buffer, imageHash)
-            .then((result) => response.send(result))
-            .catch((err) => {
-                console.log(err);
-                response.send(err);
-            });
-    })
-
-    request.on('error', (err) => {
-        response.send(err);
-    })
+    console.log("working")
+    uploadImageEndPt(request, response, gridFsBucket)
 });
 
 // api endpoint to get images
 app.get('/api/images', async (request: Request, response: Response) => {
-    // request data
-    const pageNo = parseInt(request.headers.pageno as string);
-    const limit = parseInt(request.headers.limit as string);
-    const skipCount = (pageNo - 1) * limit;
-
-    // get images from database
-    const promiseResponse = await getImageFromDB(
-        gridFsBucket,
-        skipCount,
-        limit
-    )
-        .then((result) => {
-            response.send(result);
-        })
-        .catch((error) => {
-            console.log(error);
-        })
+    getImageEndPt(request, response, gridFsBucket);
 });
 
 // api endpoint to get total images
-app.get('/api/getTotalImages', (request: Request, response: Response) => {
-    getTotalImageCountFromDB(gridFsBucket)
-        .then((result) => {
-            response.send(result);
-        })
-        .catch((error) => {
-            console.log(error);
-        })
+app.get('/api/getTotalImages', async (request: Request, response: Response) => {
+    await getTotalImagesCountEndPt(request, response, gridFsBucket);
 })
 
 // api endpoint to delete images
 app.post('/api/deleteImages', async (request: Request, response: Response) => {
-    const imageHashes: string[] = request.body.imageHashs;
-    let deletedImages: string[] = []
-
-    await Promise.all(
-        imageHashes.map(async (hash) => {
-            await deleteImageDB(gridFsBucket, hash);
-            deletedImages.push(hash);
-        })
-    );
-
-    response.send({
-        deletedImages,
-        message: deletedImages.length === 0 ? 'No images deleted' : 'Images deleted',
-        status: 200
-    });
+    await deleteImagesEndPt(request, response, gridFsBucket);
 })
 
 // server listener

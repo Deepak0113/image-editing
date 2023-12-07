@@ -16,6 +16,7 @@ const App = () => {
 
     useEffect(() => {
         console.log(images, images.length);
+        console.log(images.map((image) => {return image.imageId}))
     }, [images])
 
     // function to maintain images data between components uploadpage and gallerypage
@@ -36,7 +37,8 @@ const App = () => {
         {/* app containers switch */}
         {
             currentNav === 'upload' ?
-                <UploadPage images={images} handleImage={handleImages} /> : <GalleryPage images={images} handleImages={handleImages} />
+                <UploadPage images={images} handleImage={handleImages} /> :
+                <GalleryPage images={images} handleImages={handleImages} />
         }
     </div>;
 }

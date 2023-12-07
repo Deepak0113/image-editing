@@ -12,25 +12,38 @@ interface GalleryPageProps {
 }
 
 const GalleryPage: FC<GalleryPageProps> = ({ images, handleImages }) => {
+    // state to manage page number for corosal slider
     const [pageNo, setPageNo] = useState<number>(1);
+
+    // state to manage count of total images for a user
     const [totalImagesCount, setTotalImagesCount] = useState<number>(0);
+
+    // state that stores imageid that should be deleted
     const [selectDeleteImages, setSelectDeleteImages] = useState<Set<string>>(new Set());
+
+    // corosal slider images limit
     const displayLimit = 10;
 
+    // state to manage the clicked image to use it for editing
     const [clickedImage, setClickedImage] = useState<string | null>(null);
+
+    // custom hook to manage popup notification
     const { openPopupNotification, notification } = usePopupNotification();
 
     // state to handle delete mode
     const [isDeleteMode, setIsDeleteMode] = useState<boolean>(false);
 
-    // useeffect hook to get total number of images in db
+    // useEffect hook to get total number of images that a user have
     useEffect(() => {
         getTotalImageCount()
-            .then((result) => setTotalImagesCount(prev => result.message))
+            .then((result) => {
+                setTotalImagesCount(result.data.count);
+                console.log(result);
+            })
             .catch((err) => console.log(err))
     }, []);
 
-    // useeffect hook to get images
+    // useEffect hook to get images
     useEffect(() => {
         if (images.length == 0 || images.length < pageNo * displayLimit) {
             console.log('getting from gallery');
@@ -38,7 +51,7 @@ const GalleryPage: FC<GalleryPageProps> = ({ images, handleImages }) => {
         }
     }, [totalImagesCount, pageNo]);
 
-    // handles corosal movement to left
+    // function to handle corosal to move left
     const handleCorosalLeft = () => {
         console.log(totalImagesCount);
         if (pageNo > 1) {
@@ -47,7 +60,7 @@ const GalleryPage: FC<GalleryPageProps> = ({ images, handleImages }) => {
         }
     }
 
-    // handles corosal movement to right
+    // function to handle corosal to move right
     const handleCorosalRight = () => {
         console.log(totalImagesCount);
         const isMoveRight = (((pageNo + 1) * displayLimit) - totalImagesCount) < displayLimit;
@@ -58,7 +71,7 @@ const GalleryPage: FC<GalleryPageProps> = ({ images, handleImages }) => {
         }
     }
 
-    // handles selecting image for deleting image
+    // function to handle selecting image for deleting image
     const handleDeleteImage = (imageHash: string) => {
         if (!isDeleteMode) return;
 
@@ -67,15 +80,16 @@ const GalleryPage: FC<GalleryPageProps> = ({ images, handleImages }) => {
         setSelectDeleteImages(select);
     }
 
-    // delete selected images using API
+    // function to delete selected images using API
     const deleteImages = () => {
         if (selectDeleteImages.size === 0) return;
 
         deleteImagesAPI(Array.from(selectDeleteImages.keys()))
             .then((result) => {
-                removeImagesFromList(Array.from(result.deletedImages));
+                console.log(result)
+                const toBeDeletedImagesIds = result.data.filter(value => value.isDeleted).map(item => item.imageId);;
+                removeImagesFromList(Array.from(toBeDeletedImagesIds));
                 setTotalImagesCount((prev) => prev - selectDeleteImages.size);
-                setSelectDeleteImages(new Set());
                 openPopupNotification('Deleted images');
             })
             .catch((err) => {
@@ -83,33 +97,34 @@ const GalleryPage: FC<GalleryPageProps> = ({ images, handleImages }) => {
             })
     }
 
-    // this function is to removing the images from the gallery that are successfuly deleted
+    // function to remove the images from the gallery that are successfuly deleted
     const removeImagesFromList = (imagesToBeRemoved: string[]) => {
         let imagesTemp = images;
+        let selectDeleteImageTemp = selectDeleteImages;
 
-        imagesToBeRemoved.map((imageHash) => {
-            imagesTemp = imagesTemp.filter((item) => item.imageHash === imageHash);
+        imagesToBeRemoved.map((imageId) => {
+            imagesTemp = imagesTemp.filter((item) => item.imageId !== imageId);
+            selectDeleteImageTemp.delete(imageId);
         })
-
+        
+        setSelectDeleteImages(new Set(selectDeleteImageTemp));
         handleImages(imagesTemp);
     }
 
     // get images for gallery using API
     const getGalleryImages = async () => {
         try {
-            const result = await getImagesAPI(displayLimit, pageNo);
-            console.log(pageNo, pageNo * displayLimit, images.length);
-
+            const result: IncomingGetImageResponse = await getImagesAPI(displayLimit, pageNo);
             const imgs = images.slice(0, (pageNo - 1) * displayLimit);
 
             handleImages(
                 [
                     ...(pageNo * displayLimit > images.length ? images.slice(0, (pageNo - 1) * displayLimit) : images),
-                    ...result.map(imageRes => {
+                    ...result.data.map(imageRes => {
                         return {
-                            imageBuffer: imageRes.imageBuffer,
-                            imageUrl: generateImageUrlFromBuffer(imageRes.imageBuffer),
-                            imageHash: imageRes.imageHash
+                            imageBuffer: imageRes.buffer,
+                            imageUrl: generateImageUrlFromBuffer(imageRes.buffer as { data: Buffer; type: string; }),
+                            imageId: imageRes.imageId
                         }
                     })
                 ]
@@ -127,7 +142,7 @@ const GalleryPage: FC<GalleryPageProps> = ({ images, handleImages }) => {
         {notification}
 
         {/* gallery nav */}
-        <div className="gallerypage__topnav">
+        {images.length>0 && <div className="gallerypage__topnav">
             {
                 isDeleteMode ?
                     <>
@@ -142,7 +157,7 @@ const GalleryPage: FC<GalleryPageProps> = ({ images, handleImages }) => {
                     </> :
                     <button className="btn btn-primary" onClick={() => setIsDeleteMode(true)}>Delete images</button>
             }
-        </div>
+        </div>}
 
         {/* edit board */}
         {!isDeleteMode && clickedImage && <div className="popup">
@@ -165,13 +180,16 @@ const GalleryPage: FC<GalleryPageProps> = ({ images, handleImages }) => {
                             images
                                 .slice((pageNo - 1) * displayLimit, pageNo * displayLimit)
                                 .map((imageItem) => {
-                                    return <div className="gallery__image__container" key={imageItem.imageHash + 123}>
+                                    return <div className="gallery__image__container" key={imageItem.imageId as string + 123}>
                                         <img
                                             className="gallery__image"
                                             src={imageItem.imageUrl}
-                                            alt={imageItem.imageHash}
-                                            onClick={() => isDeleteMode ? handleDeleteImage(imageItem.imageHash) : setClickedImage(imageItem.imageUrl)} />
-                                        {selectDeleteImages.has(imageItem.imageHash) && <DeleteIcon className="delete__icon" height={32} fill="#f0483e" />}
+                                            alt={imageItem.imageId as string}
+                                            onClick={() => isDeleteMode ? handleDeleteImage(imageItem.imageId as string) : setClickedImage(imageItem.imageUrl)} />
+                                        {
+                                            selectDeleteImages.has(imageItem.imageId as string) &&
+                                            <DeleteIcon className="delete__icon" height={32} fill="#f0483e" />
+                                        }
                                     </div>
                                 })
                         }
@@ -181,4 +199,6 @@ const GalleryPage: FC<GalleryPageProps> = ({ images, handleImages }) => {
     </div >
 }
 
+
+// export GalleryPage
 export default GalleryPage;

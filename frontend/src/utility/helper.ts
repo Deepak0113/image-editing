@@ -1,3 +1,4 @@
+import CryptoJS from "crypto-js"
 import JSZip from "jszip";
 import { createUnzip, unzip, unzipSync } from "zlib";
 
@@ -8,7 +9,7 @@ export function fileToArrayBuffer(file: File): Promise<ArrayBuffer> {
         reader.onload = (event) => {
             if (!event) return null;
             if (!event.target) return null;
-            
+
             const arrayBuffer = event.target.result;
             resolve(arrayBuffer as ArrayBuffer);
         };
@@ -34,7 +35,7 @@ export function unzipOnlyImages(zipFile: File): Promise<File[]> {
                 if (isFileImage(filename) && !filename.startsWith('__MACOSX')) {
                     const content = await file.async('uint8array');
                     const type = getFileType(filename);
-                    const fileconent = new File([content], file.name, {type: type});
+                    const fileconent = new File([content], file.name, { type: type });
                     extractedFiles.push(fileconent);
                 }
             }
@@ -117,7 +118,7 @@ export const convertSvgToJpegDataUrl = (svg: SVGSVGElement, imageUrl: string): P
 
         const widthAttribute = svg.getAttribute('width');
         if (widthAttribute !== null) {
-            console.log(widthAttribute) 
+            console.log(widthAttribute)
             const svgWidth = parseFloat(widthAttribute);
             if (!isNaN(svgWidth)) {
                 canvas.width = svgWidth;
@@ -125,7 +126,7 @@ export const convertSvgToJpegDataUrl = (svg: SVGSVGElement, imageUrl: string): P
                 canvas.width = 100;
             }
         }
-        
+
 
         // image
         const image = new Image();
@@ -153,4 +154,31 @@ export const convertSvgToJpegDataUrl = (svg: SVGSVGElement, imageUrl: string): P
 
 }
 
+export function generateImageHash(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
 
+        const fileReader = new FileReader();
+
+        fileReader.onload = () => {
+            const arrayBuffer = fileReader.result as ArrayBuffer;
+            const uint8Array = new Uint8Array(arrayBuffer);
+
+            const wordArray: CryptoJS.lib.WordArray = CryptoJS.lib.WordArray.create(Array.from(uint8Array));
+            const hashValue = CryptoJS.SHA256(wordArray).toString();
+
+
+            console.log({
+                hashcheck1__checking: CryptoJS.SHA256(wordArray).toString(),
+            });
+
+            resolve(hashValue as string)
+        }
+
+        fileReader.onerror = (err) => {
+            console.log(err);
+            reject('')
+        }
+
+        fileReader.readAsArrayBuffer(file)
+    })
+}
